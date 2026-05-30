@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钙钛矿太阳能电池优化系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:hover {
+            border-color: #667eea;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        option {
+            padding: 8px;
+        }
+
+        option[value=""] {
+            color: #999;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h2 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .result-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-item label {
+            margin-bottom: 0;
+            color: #666;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .result-item value {
+            color: #667eea;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .pce-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            font-size: 24px !important;
+            text-align: center;
+            padding: 20px !important;
+            border-radius: 6px !important;
+            margin-bottom: 15px !important;
+        }
+
+        .pce-result label {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-size: 14px !important;
+            margin-bottom: 5px !important;
+        }
+
+        .pce-result value {
+            color: white !important;
+            font-size: 32px !important;
+            background: transparent !important;
+        }
+
+        .error {
+            display: none;
+            padding: 15px;
+            background: #fee;
+            border-left: 4px solid #f44;
+            border-radius: 6px;
+            color: #c33;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .parameters-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .parameters-section h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ 钙钛矿太阳能电池性能优化</h1>
+
+        <div class="error" id="error"></div>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>计算中，请稍候...
+        </div>
+
+        <form id="optimizeForm">
+            <div class="parameters-section">
+                <h3>选择要固定的参数（留空则自动优化）</h3>
+            </div>
+
+            <div class="form-group">
+                <label for="etl_material">ETL 材料</label>
+                <select id="etl_material" name="etl_material">
+                    <option value="">自动选择</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="etl_thickness">ETL 厚度 (nm)</label>
+                <select id="etl_thickness" name="etl_thickness">
+                    <option value="">自动选择</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="perovskite_thickness">钙钛矿厚度 (nm)</label>
+                <select id="perovskite_thickness" name="perovskite_thickness">
+                    <option value="">自动选择</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="htl_thickness">HTL 厚度 (nm)</label>
+                <select id="htl_thickness" name="htl_thickness">
+                    <option value="">自动选择</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="back_contact_wf">背接触功函数 (eV)</label>
+                <select id="back_contact_wf" name="back_contact_wf">
+                    <option value="">自动选择</option>
+                </select>
+            </div>
+
+            <button type="submit">计算最优配置</button>
+        </form>
+
+        <div class="result" id="result">
+            <div class="pce-result">
+                <label>最优效率 (PCE)</label>
+                <value id="pce_value">0.00%</value>
+            </div>
+
+            <h2>最优参数配置</h2>
+            <div id="optimal_params"></div>
+
+            <h2 style="margin-top: 20px; font-size: 16px; color: #999;">固定参数</h2>
+            <div id="specified_params" style="color: #999;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOptions();
+            document.getElementById('optimizeForm').addEventListener('submit', handleOptimize);
+        });
+
+        // 加载可选值
+        async function loadOptions() {
+            try {
+                const response = await fetch(`${API_BASE}/options`);
+                const data = await response.json();
+
+                populateSelect('etl_material', data.ETL_material);
+                populateSelect('etl_thickness', data.ETL_thickness);
+                populateSelect('perovskite_thickness', data.perovskite_thickness);
+                populateSelect('htl_thickness', data.HTL_thickness);
+                populateSelect('back_contact_wf', data.back_contact_wf);
+            } catch (error) {
+                showError('无法加载选项: ' + error.message);
+            }
+        }
+
+        // 填充下拉框
+        function populateSelect(selectId, options) {
+            const select = document.getElementById(selectId);
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                opt.textContent = option;
+                select.appendChild(opt);
+            });
+        }
+
+        // 处理提交
+        async function handleOptimize(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const params = {
+                ETL_material: form.etl_material.value || null,
+                ETL_thickness: form.etl_thickness.value ? parseFloat(form.etl_thickness.value) : null,
+                perovskite_thickness: form.perovskite_thickness.value ? parseFloat(form.perovskite_thickness.value) : null,
+                HTL_thickness: form.htl_thickness.value ? parseFloat(form.htl_thickness.value) : null,
+                back_contact_wf: form.back_contact_wf.value ? parseFloat(form.back_contact_wf.value) : null
+            };
+
+            hideError();
+            showLoading();
+            hideResult();
+
+            try {
+                const response = await fetch(`${API_BASE}/optimize`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(params)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResult(data);
+                } else {
+                    showError(data.error || '优化失败');
+                }
+            } catch (error) {
+                showError('请求失败: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 显示结果
+        function displayResult(data) {
+            document.getElementById('pce_value').textContent = data.optimal_pce.toFixed(2) + '%';
+
+            const optimalParams = document.getElementById('optimal_params');
+            optimalParams.innerHTML = '';
+            for (const [key, value] of Object.entries(data.optimal_parameters)) {
+                if (value !== null && value !== undefined) {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    const label = document.createElement('label');
+                    label.textContent = key;
+                    const val = document.createElement('value');
+                    val.textContent = typeof value === 'number' ? value.toFixed(4) : value;
+                    div.appendChild(label);
+                    div.appendChild(val);
+                    optimalParams.appendChild(div);
+                }
+            }
+
+            const specifiedParams = document.getElementById('specified_params');
+            specifiedParams.innerHTML = '';
+            const spec = data.specified_parameters;
+            if (spec.ETL_material) specifiedParams.innerHTML += `<div class="result-item"><label>ETL 材料</label><value>${spec.ETL_material}</value></div>`;
+            if (spec.ETL_thickness) specifiedParams.innerHTML += `<div class="result-item"><label>ETL 厚度</label><value>${spec.ETL_thickness}</value></div>`;
+            if (spec.perovskite_thickness) specifiedParams.innerHTML += `<div class="result-item"><label>钙钛矿厚度</label><value>${spec.perovskite_thickness}</value></div>`;
+            if (spec.HTL_thickness) specifiedParams.innerHTML += `<div class="result-item"><label>HTL 厚度</label><value>${spec.HTL_thickness}</value></div>`;
+            if (spec.back_contact_wf) specifiedParams.innerHTML += `<div class="result-item"><label>背接触功函数</label><value>${spec.back_contact_wf}</value></div>`;
+
+            showResult();
+        }
+
+        // UI 辅助函数
+        function showError(msg) {
+            const el = document.getElementById('error');
+            el.textContent = msg;
+            el.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('error').classList.remove('show');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+        }
+
+        function showResult() {
+            document.getElementById('result').classList.add('show');
+        }
+
+        function hideResult() {
+            document.getElementById('result').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
