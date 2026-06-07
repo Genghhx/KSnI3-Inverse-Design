@@ -255,13 +255,6 @@
             </div>
 
             <div class="form-group">
-                <label for="etl_material">ETL 材料</label>
-                <select id="etl_material" name="etl_material">
-                    <option value="">自动选择</option>
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label for="etl_thickness">ETL 厚度 (nm)</label>
                 <select id="etl_thickness" name="etl_thickness">
                     <option value="">自动选择</option>
@@ -321,7 +314,6 @@
                 const response = await fetch(`${API_BASE}/options`);
                 const data = await response.json();
 
-                populateSelect('etl_material', data.ETL_material);
                 populateSelect('etl_thickness', data.ETL_thickness);
                 populateSelect('perovskite_thickness', data.perovskite_thickness);
                 populateSelect('htl_thickness', data.HTL_thickness);
@@ -348,7 +340,6 @@
 
             const form = e.target;
             const params = {
-                ETL_material: form.etl_material.value || null,
                 ETL_thickness: form.etl_thickness.value ? parseFloat(form.etl_thickness.value) : null,
                 perovskite_thickness: form.perovskite_thickness.value ? parseFloat(form.perovskite_thickness.value) : null,
                 HTL_thickness: form.htl_thickness.value ? parseFloat(form.htl_thickness.value) : null,
@@ -387,7 +378,7 @@
             const optimalParams = document.getElementById('optimal_params');
             optimalParams.innerHTML = '';
             for (const [key, value] of Object.entries(data.optimal_parameters)) {
-                if (value !== null && value !== undefined) {
+                if (value !== null && value !== undefined && key !== 'ETL Materials') {
                     const div = document.createElement('div');
                     div.className = 'result-item';
                     const label = document.createElement('label');
@@ -403,7 +394,6 @@
             const specifiedParams = document.getElementById('specified_params');
             specifiedParams.innerHTML = '';
             const spec = data.specified_parameters;
-            if (spec.ETL_material) specifiedParams.innerHTML += `<div class="result-item"><label>ETL 材料</label><value>${spec.ETL_material}</value></div>`;
             if (spec.ETL_thickness) specifiedParams.innerHTML += `<div class="result-item"><label>ETL 厚度</label><value>${spec.ETL_thickness}</value></div>`;
             if (spec.perovskite_thickness) specifiedParams.innerHTML += `<div class="result-item"><label>钙钛矿厚度</label><value>${spec.perovskite_thickness}</value></div>`;
             if (spec.HTL_thickness) specifiedParams.innerHTML += `<div class="result-item"><label>HTL 厚度</label><value>${spec.HTL_thickness}</value></div>`;
